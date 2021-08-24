@@ -3,6 +3,7 @@ import { useState } from 'react'
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
+import { FormEvent } from 'react';
 
 interface Task {
   id: number;
@@ -14,19 +15,44 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
-  function handleCreateNewTask() {
+  function handleCreateNewTask(e: FormEvent) {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    e.preventDefault();
+
+    if(newTaskTitle.trim() === '') {
+       return
+    }
+
+    const newTask = {
+      id: Math.floor((Math.random() * 10) + 1),
+      title: newTaskTitle,
+      isComplete: false,
+    }
+
+    setTasks(tasks => [...tasks, newTask]);
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
-  }
 
+    const checkedTask = tasks.map(task => {
+      if(task.id === id){
+        return { ...task, isComplete: !task.isComplete };
+      }
+      return task;
+    })
+      setTasks(checkedTask)
+    }
+      
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    const removeTask = tasks.filter(task => task.id !== id);
+
+    setTasks(removeTask)
   }
 
   return (
+    
     <section className="task-list container">
       <header>
         <h2>Minhas tasks</h2>
